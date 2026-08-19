@@ -1,6 +1,6 @@
 {
-  "versionCode": 10,
-  "versionName": "1.9.0",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.0/Lithocoon-1.9.0.apk",
-  "notes": "Version complète débloquée par licence nominative (édition téléchargée). 24 nouvelles pierres (136 au total), favoris et écran « Les chakras »."
+  "versionCode": 11,
+  "versionName": "1.9.1",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.1/Lithocoon-1.9.1.apk",
+  "notes": "Correction d'un plantage au démarrage sur certains appareils récents (Android 16). 24 nouvelles pierres (136 au total), favoris et écran « Les chakras »."
 }
