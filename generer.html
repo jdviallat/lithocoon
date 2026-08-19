@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Générateur de licences — Gamme Bengacoon</title>
+<style>
+  :root{--nuit:#2E2A47;--or:#C9A86A;--creme:#F6F2E9;--creme2:#EEE7D7;--texte:#2A2A28;--muted:#6E6A60;--err:#B23A3A;--ok:#2E7D32}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--creme);color:var(--texte);margin:0;line-height:1.5}
+  .wrap{max-width:660px;margin:0 auto;padding:26px 18px 60px}
+  h1{font-size:23px;margin:0 0 2px}
+  .par{color:var(--or);font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase}
+  .card{background:#fff;border:1px solid var(--creme2);border-radius:16px;padding:20px;margin-top:18px}
+  label{display:block;font-weight:700;font-size:13px;margin:12px 0 4px}
+  input,select{width:100%;padding:10px 12px;border:1px solid #d8d1bf;border-radius:10px;font-size:15px;background:#fff}
+  .row{display:flex;gap:12px}.row>div{flex:1}
+  button{margin-top:18px;width:100%;padding:13px;border:0;border-radius:12px;background:var(--nuit);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .out{margin-top:16px;padding:14px;border-radius:12px;background:var(--creme2);word-break:break-all;font-family:ui-monospace,Menlo,monospace;font-size:13px;display:none}
+  .out.show{display:block}
+  .msg{margin-top:10px;font-size:13.5px}.msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
+  .copy{margin-top:10px;background:var(--or);color:#3a2e12}
+  .note{font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.55}
+  .keyok{font-size:12.5px;color:var(--ok);font-weight:700;margin-top:6px;display:none}.keyok.show{display:block}
+  .prix{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .term{display:none;margin-top:12px;padding:12px;border-radius:10px;background:#2E2A47;color:#EFEAF7;font-size:12.5px;line-height:1.6}
+  .term code{color:#E3CB98;font-family:ui-monospace,Menlo,monospace}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+  th,td{text-align:left;padding:6px 8px;border-top:1px solid var(--creme2)}th{color:var(--muted);border-top:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="par">par Bengacoon</div>
+  <h1>Générateur de licences — gamme</h1>
+  <p class="note" style="margin-top:6px">Fabrique une licence pour une appli payante, <strong>payante ou gratuite (full offerte)</strong>. Tout se passe dans ce navigateur : ta clé privée ne quitte jamais l'appareil.</p>
+
+  <div class="card">
+    <label>1. Appli</label>
+    <select id="app"></select>
+    <div class="prix" id="prix"></div>
+
+    <div id="termNote" class="term">
+      Oraclecoon utilise une signature ECDSA, plus simple à générer au terminal :<br>
+      <code>node generer.mjs --app oraclecoon --client "Nom" --email x@y --type gratuite</code>
+    </div>
+
+    <div id="form">
+      <label id="keyLabel">2. Clé privée de cette appli</label>
+      <input type="file" id="key">
+      <div class="keyok" id="keyok">✓ Clé chargée</div>
+
+      <label>3. Nom du client</label>
+      <input type="text" id="client" placeholder="Marie Dupont" autocomplete="off">
+      <label>Email du client</label>
+      <input type="email" id="email" placeholder="marie@exemple.fr" autocomplete="off">
+
+      <div class="row">
+        <div><label>Type</label><select id="type"><option value="payante">Payante</option><option value="gratuite">Gratuite (full offerte)</option></select></div>
+        <div><label>Expiration (optionnel)</label><input type="date" id="expire"></div>
+      </div>
+
+      <button id="go" disabled>Générer la licence</button>
+      <div class="msg" id="msg"></div>
+      <div class="out" id="out"></div>
+      <button class="copy" id="copy" style="display:none">Copier la licence</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:10px">
+      <strong>📒 Registre</strong><span id="regcount" class="note" style="margin:0"></span>
+      <span style="margin-left:auto"><button id="exp" style="width:auto;margin:0;padding:8px 12px;font-size:13px;background:var(--or);color:#3a2e12">Exporter CSV</button></span>
+    </div>
+    <div style="overflow:auto"><table><thead><tr><th>Date</th><th>Appli</th><th>Type</th><th>Client</th></tr></thead><tbody id="regbody"></tbody></table></div>
+  </div>
+
+  <p class="note">La licence se colle dans l'appli : <em>Réglages → Version complète / J'ai une licence</em>. ⚠️ Ne mets jamais tes clés privées en ligne. Page ouvrable hors-ligne.</p>
+</div>
+
+<script src="nacl.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+// Schéma + préfixe + fichier de clé par appli (RESPECTE l'existant).
+const APPS={
+  lithocoon:{nom:"Lithocoon",prix:"7,90 €",schema:"rsa",prefixe:"LITHO1",cle:"lithocoon-licence-private.pem (.pem)"},
+  radiescoon:{nom:"Radiescoon",prix:"7,90 €",schema:"ed25519",prefixe:"RAD",cle:"radiescoon-licence-privkey.txt (.txt)"},
+  flowercoon:{nom:"Flowercoon",prix:"4,90 €",schema:"ed25519",prefixe:"FLW",cle:"flowercoon-licence-privkey.txt (.txt)"},
+  oraclecoon:{nom:"Oraclecoon",prix:"7,90 €",schema:"ecdsa",prefixe:"ORC2",cle:""},
+};
+$('app').innerHTML=Object.entries(APPS).map(([k,v])=>`<option value="${k}">${v.nom}</option>`).join('');
+
+let cle=null; // clé importée (WebCrypto RSA) ou secret Ed25519 (Uint8Array)
+const b64url=buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+function pemToDer(pem){const b=pem.replace(/-----BEGIN [^-]+-----/,'').replace(/-----END [^-]+-----/,'').replace(/\s+/g,'');const bin=atob(b);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a.buffer;}
+function b64ToBytes(s){const bin=atob(s.trim());const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+
+function conf(){return APPS[$('app').value];}
+function majUI(){
+  const c=conf();
+  $('prix').textContent="Prix de référence : "+c.prix;
+  const ecdsa=c.schema==="ecdsa";
+  $('termNote').style.display=ecdsa?"block":"none";
+  $('form').style.display=ecdsa?"none":"block";
+  $('keyLabel').textContent="2. Clé privée — "+c.cle;
+}
+$('app').addEventListener('change',()=>{cle=null;$('keyok').classList.remove('show');$('key').value='';majUI();maj();});
+majUI();
+
+function maj(){$('go').disabled=!(cle&&$('client').value.trim()&&$('email').value.trim());}
+$('key').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const txt=await f.text();
+    if(conf().schema==="rsa"){
+      cle=await crypto.subtle.importKey('pkcs8',pemToDer(txt),{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);
+    }else{ // ed25519 : fichier .txt « secretKey(base64):\n<b64> »
+      const lines=txt.split('\n');const i=lines.findIndex(l=>l.includes('secretKey'));
+      cle=b64ToBytes(lines[i+1]);
+      if(cle.length!==64) throw new Error("clé Ed25519 inattendue");
+    }
+    $('keyok').classList.add('show');$('msg').textContent='';
+  }catch(err){cle=null;$('keyok').classList.remove('show');$('msg').className='msg err';$('msg').textContent='Clé illisible : '+err.message;}
+  maj();
+});
+['client','email'].forEach(id=>$(id).addEventListener('input',maj));
+
+$('go').addEventListener('click',async()=>{
+  try{
+    const c=conf(),app=$('app').value,type=$('type').value,date=new Date().toISOString().slice(0,10);
+    let licence;
+    if(c.schema==="rsa"){
+      const payload={p:app,c:$('client').value.trim(),m:$('email').value.trim(),t:type,d:date};
+      if($('expire').value)payload.exp=$('expire').value;
+      const bytes=new TextEncoder().encode(JSON.stringify(payload));
+      const sig=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',cle,bytes);
+      licence=c.prefixe+'.'+b64url(bytes.buffer)+'.'+b64url(sig);
+    }else{ // ed25519 : payload {c,t:paid|free,d}
+      const payload={c:$('client').value.trim(),t:type==="gratuite"?"free":"paid",d:date};
+      const bytes=new TextEncoder().encode(JSON.stringify(payload));
+      const sig=nacl.sign.detached(bytes,cle);
+      licence=c.prefixe+'.'+b64url(bytes.buffer)+'.'+b64url(sig);
+    }
+    $('out').textContent=licence;$('out').classList.add('show');$('copy').style.display='block';
+    $('msg').className='msg ok';$('msg').textContent='Licence '+type+' générée pour '+$('client').value.trim()+' ('+c.nom+').';
+    addReg({date,app:c.nom,type,client:$('client').value.trim(),email:$('email').value.trim(),licence});
+  }catch(err){$('msg').className='msg err';$('msg').textContent='Erreur : '+err.message+' — as-tu chargé la BONNE clé privée de cette appli ?';}
+});
+$('copy').addEventListener('click',()=>navigator.clipboard.writeText($('out').textContent).then(()=>{$('copy').textContent='✓ Copié';setTimeout(()=>$('copy').textContent='Copier la licence',1500);}));
+
+// registre localStorage
+const K='gamme_licences';
+const load=()=>{try{return JSON.parse(localStorage.getItem(K)||'[]')}catch{return[]}};
+const esc=v=>{const s=String(v??'');return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+function addReg(e){const r=load();r.push(e);localStorage.setItem(K,JSON.stringify(r));render();}
+function render(){const r=load();$('regcount').textContent=r.length?`(${r.length} · ${r.filter(x=>x.type==='payante').length} payantes)`:'(vide)';$('regbody').innerHTML=r.slice().reverse().map(e=>`<tr><td>${e.date}</td><td>${e.app}</td><td>${e.type}</td><td>${(e.client||'').replace(/</g,'&lt;')}</td></tr>`).join('');}
+$('exp').addEventListener('click',()=>{const r=load();const csv='date,app,type,client,email,licence\n'+r.map(e=>[e.date,e.app,e.type,e.client,e.email,e.licence].map(esc).join(',')).join('\n')+'\n';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='gamme-licences.csv';document.body.appendChild(a);a.click();a.remove();});
+render();
+</script>
+</body>
+</html>
