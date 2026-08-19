@@ -55,10 +55,31 @@
       </div>
     </div>
 
+    <label>Montant encaissé (optionnel)</label>
+    <input type="text" id="montant" placeholder="7,90 €" autocomplete="off">
+
     <button id="go" disabled>Générer la licence</button>
     <div class="msg" id="msg"></div>
     <div class="out" id="out"></div>
     <button class="copy" id="copy" style="display:none">Copier la licence</button>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:10px">
+      <strong style="font-size:16px">📒 Registre des licences</strong>
+      <span id="regcount" class="note" style="margin:0"></span>
+      <span style="margin-left:auto;display:flex;gap:8px">
+        <button id="exp" style="width:auto;margin:0;padding:8px 12px;font-size:13px;background:var(--or);color:#3a2e12">Exporter CSV</button>
+        <label style="margin:0"><input type="file" id="imp" accept=".csv" style="display:none"><span style="display:inline-block;padding:8px 12px;border:1px solid #d8d1bf;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;background:#fff">Importer</span></label>
+      </span>
+    </div>
+    <div style="overflow:auto;margin-top:12px">
+      <table id="regtable" style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="text-align:left;color:var(--muted)"><th style="padding:6px 8px">Date</th><th style="padding:6px 8px">Type</th><th style="padding:6px 8px">Client</th><th style="padding:6px 8px">Email</th><th style="padding:6px 8px">Montant</th></tr></thead>
+        <tbody id="regbody"></tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:8px">Ce registre est stocké <strong>dans ce navigateur</strong> (localStorage). Exporte-le en CSV pour le sauvegarder ou le fusionner avec le registre du terminal (<code>release-hub/secrets/lithocoon-licences.csv</code>). Reste privé : il contient noms et emails.</p>
   </div>
 
   <p class="note">La licence produite (<code>LITHO1.…</code>) se colle dans l'app : <strong>Réglages → Version complète → « Vous avez une licence ? » → Activer</strong>.<br>
@@ -104,11 +125,44 @@ $('go').addEventListener('click', async () => {
     $('copy').style.display='block';
     $('msg').className='msg ok';
     $('msg').textContent = 'Licence '+payload.t+' générée pour '+payload.c+(payload.exp?(' (expire le '+payload.exp+')'):' (à vie)')+'.';
+    ajouterRegistre({ date:payload.d, client:payload.c, email:payload.m, type:payload.t,
+      expire:payload.exp||'', montant:$('montant').value.trim()||(payload.t==='gratuite'?'0':''), licence });
   }catch(err){ $('msg').className='msg err'; $('msg').textContent='Erreur : '+err.message; }
 });
 $('copy').addEventListener('click', () => {
   navigator.clipboard.writeText($('out').textContent).then(()=>{ $('copy').textContent='✓ Copié'; setTimeout(()=>$('copy').textContent='Copier la licence',1500); });
 });
+
+// --- Registre (localStorage) ---
+const REG_CLE = 'litho_licences';
+const csvEsc = v => { const s=String(v??''); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; };
+function chargerRegistre(){ try{ return JSON.parse(localStorage.getItem(REG_CLE)||'[]'); }catch{ return []; } }
+function ajouterRegistre(e){ const r=chargerRegistre(); r.push(e); localStorage.setItem(REG_CLE,JSON.stringify(r)); rendreRegistre(); }
+function rendreRegistre(){
+  const r=chargerRegistre();
+  $('regcount').textContent = r.length? `(${r.length} · ${r.filter(x=>x.type==='payante').length} payantes)` : '(vide)';
+  $('regbody').innerHTML = r.slice().reverse().map(e=>
+    `<tr style="border-top:1px solid var(--creme2)"><td style="padding:6px 8px">${e.date||''}</td><td style="padding:6px 8px">${e.type||''}</td><td style="padding:6px 8px">${(e.client||'').replace(/</g,'&lt;')}</td><td style="padding:6px 8px">${(e.email||'').replace(/</g,'&lt;')}</td><td style="padding:6px 8px">${e.montant||''}</td></tr>`
+  ).join('');
+}
+$('exp').addEventListener('click', () => {
+  const r=chargerRegistre();
+  const csv='date_emission,client,email,type,expire,montant,licence\n'+
+    r.map(e=>[e.date,e.client,e.email,e.type,e.expire,e.montant,e.licence].map(csvEsc).join(',')).join('\n')+'\n';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='lithocoon-licences.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+});
+$('imp').addEventListener('change', async e => {
+  const f=e.target.files[0]; if(!f) return;
+  const lignes=(await f.text()).trim().split('\n').slice(1);
+  const parse=l=> l.match(/("([^"]|"")*"|[^,]*)(,|$)/g).map(c=>c.replace(/,$/,'').replace(/^"|"$/g,'').replace(/""/g,'"'));
+  const imported=lignes.filter(Boolean).map(l=>{const c=parse(l);return{date:c[0],client:c[1],email:c[2],type:c[3],expire:c[4],montant:c[5],licence:c[6]};});
+  const r=chargerRegistre(); const seen=new Set(r.map(x=>x.licence));
+  imported.forEach(x=>{ if(x.licence && !seen.has(x.licence)){ r.push(x); seen.add(x.licence); }});
+  localStorage.setItem(REG_CLE,JSON.stringify(r)); rendreRegistre();
+});
+rendreRegistre();
 </script>
 </body>
 </html>
