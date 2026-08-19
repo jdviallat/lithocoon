@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Générateur de licences Lithocoon</title>
+<style>
+  :root{--nuit:#2E2A47;--or:#C9A86A;--creme:#F6F2E9;--creme2:#EEE7D7;--texte:#2A2A28;--muted:#6E6A60;--err:#B23A3A;--ok:#2E7D32}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--creme);color:var(--texte);margin:0;line-height:1.5}
+  .wrap{max-width:640px;margin:0 auto;padding:26px 18px 60px}
+  h1{font-size:24px;margin:0 0 2px}
+  .par{color:var(--or);font-weight:700;font-size:12px;letter-spacing:1.5px;text-transform:uppercase}
+  .card{background:#fff;border:1px solid var(--creme2);border-radius:16px;padding:20px;margin-top:18px}
+  label{display:block;font-weight:700;font-size:13px;margin:12px 0 4px}
+  input,select{width:100%;padding:10px 12px;border:1px solid #d8d1bf;border-radius:10px;font-size:15px;background:#fff}
+  .row{display:flex;gap:12px}.row>div{flex:1}
+  button{margin-top:18px;width:100%;padding:13px;border:0;border-radius:12px;background:var(--nuit);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .out{margin-top:16px;padding:14px;border-radius:12px;background:var(--creme2);word-break:break-all;font-family:ui-monospace,Menlo,monospace;font-size:13px;display:none}
+  .out.show{display:block}
+  .msg{margin-top:10px;font-size:13.5px}
+  .msg.err{color:var(--err)}.msg.ok{color:var(--ok)}
+  .copy{margin-top:10px;background:var(--or);color:#3a2e12}
+  .note{font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.55}
+  .keyok{font-size:12.5px;color:var(--ok);font-weight:700;margin-top:6px;display:none}
+  .keyok.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="par">par Bengacoon</div>
+  <h1>Générateur de licences Lithocoon</h1>
+  <p class="note" style="margin-top:6px">Fabrique une licence nominative pour la version téléchargée (hors store). Tout se passe <strong>dans ce navigateur</strong> : ta clé privée ne quitte jamais l'appareil et n'est jamais envoyée nulle part.</p>
+
+  <div class="card">
+    <label>1. Ta clé privée <code>lithocoon-licence-private.pem</code></label>
+    <input type="file" id="key" accept=".pem,.key,text/plain">
+    <div class="keyok" id="keyok">✓ Clé chargée</div>
+
+    <label>2. Nom du client</label>
+    <input type="text" id="client" placeholder="Marie Dupont" autocomplete="off">
+
+    <label>Email du client</label>
+    <input type="email" id="email" placeholder="marie@exemple.fr" autocomplete="off">
+
+    <div class="row">
+      <div>
+        <label>Type</label>
+        <select id="type"><option value="payante">Payante</option><option value="gratuite">Gratuite</option></select>
+      </div>
+      <div>
+        <label>Expiration (optionnel)</label>
+        <input type="date" id="expire">
+      </div>
+    </div>
+
+    <button id="go" disabled>Générer la licence</button>
+    <div class="msg" id="msg"></div>
+    <div class="out" id="out"></div>
+    <button class="copy" id="copy" style="display:none">Copier la licence</button>
+  </div>
+
+  <p class="note">La licence produite (<code>LITHO1.…</code>) se colle dans l'app : <strong>Réglages → Version complète → « Vous avez une licence ? » → Activer</strong>.<br>
+  ⚠️ Ne mets JAMAIS ta clé privée en ligne. Cette page peut être ouverte hors-ligne (double-clic sur le fichier).</p>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let cleImportee = null;
+const PREFIX = "LITHO1", PRODUIT = "lithocoon";
+
+const b64url = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+function pemToDer(pem){
+  const b64 = pem.replace(/-----BEGIN [^-]+-----/,'').replace(/-----END [^-]+-----/,'').replace(/\s+/g,'');
+  const bin = atob(b64); const arr = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+  return arr.buffer;
+}
+function majBouton(){ $('go').disabled = !(cleImportee && $('client').value.trim() && $('email').value.trim()); }
+
+$('key').addEventListener('change', async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{
+    const pem = await f.text();
+    cleImportee = await crypto.subtle.importKey('pkcs8', pemToDer(pem),
+      {name:'RSASSA-PKCS1-v1_5', hash:'SHA-256'}, false, ['sign']);
+    $('keyok').classList.add('show'); $('msg').textContent='';
+  }catch(err){ cleImportee=null; $('keyok').classList.remove('show');
+    $('msg').className='msg err'; $('msg').textContent='Clé illisible : '+err.message; }
+  majBouton();
+});
+['client','email'].forEach(id => $(id).addEventListener('input', majBouton));
+
+$('go').addEventListener('click', async () => {
+  try{
+    const payload = { p:PRODUIT, c:$('client').value.trim(), m:$('email').value.trim(),
+      t:$('type').value, d:new Date().toISOString().slice(0,10) };
+    if($('expire').value) payload.exp = $('expire').value;
+    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+    const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', cleImportee, bytes);
+    const licence = PREFIX + '.' + b64url(bytes.buffer) + '.' + b64url(sig);
+    $('out').textContent = licence; $('out').classList.add('show');
+    $('copy').style.display='block';
+    $('msg').className='msg ok';
+    $('msg').textContent = 'Licence '+payload.t+' générée pour '+payload.c+(payload.exp?(' (expire le '+payload.exp+')'):' (à vie)')+'.';
+  }catch(err){ $('msg').className='msg err'; $('msg').textContent='Erreur : '+err.message; }
+});
+$('copy').addEventListener('click', () => {
+  navigator.clipboard.writeText($('out').textContent).then(()=>{ $('copy').textContent='✓ Copié'; setTimeout(()=>$('copy').textContent='Copier la licence',1500); });
+});
+</script>
+</body>
+</html>
