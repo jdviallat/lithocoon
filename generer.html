@@ -87,7 +87,7 @@ const APPS={
   lithocoon:{nom:"Lithocoon",prix:"7,90 €",schema:"rsa",prefixe:"LITHO1",cle:"lithocoon-licence-private.pem (.pem)"},
   radiescoon:{nom:"Radiescoon",prix:"7,90 €",schema:"ed25519",prefixe:"RAD",cle:"radiescoon-licence-privkey.txt (.txt)"},
   flowercoon:{nom:"Flowercoon",prix:"4,90 €",schema:"ed25519",prefixe:"FLW",cle:"flowercoon-licence-privkey.txt (.txt)"},
-  oraclecoon:{nom:"Oraclecoon",prix:"7,90 €",schema:"ecdsa",prefixe:"ORC2",cle:""},
+  oraclecoon:{nom:"Oraclecoon",prix:"7,90 €",schema:"ecdsa",prefixe:"ORC2",cle:"oraclecoon-license-priv-pkcs8.pem (.pem)"},
 };
 $('app').innerHTML=Object.entries(APPS).map(([k,v])=>`<option value="${k}">${v.nom}</option>`).join('');
 
@@ -100,10 +100,15 @@ function conf(){return APPS[$('app').value];}
 function majUI(){
   const c=conf();
   $('prix').textContent="Prix de référence : "+c.prix;
-  const ecdsa=c.schema==="ecdsa";
-  $('termNote').style.display=ecdsa?"block":"none";
-  $('form').style.display=ecdsa?"none":"block";
+  $('termNote').style.display="none";
+  $('form').style.display="block";
   $('keyLabel').textContent="2. Clé privée — "+c.cle;
+}
+// Signature ECDSA WebCrypto = format brut (r||s) ; l'app attend du DER → conversion.
+function rawToDer(raw){
+  const trim=b=>{let i=0;while(i<b.length-1&&b[i]===0)i++;b=b.slice(i);if(b[0]&0x80)b=Uint8Array.of(0,...b);return b;};
+  const R=trim(raw.slice(0,32)),S=trim(raw.slice(32));
+  return Uint8Array.of(0x30,2+R.length+2+S.length,0x02,R.length,...R,0x02,S.length,...S);
 }
 $('app').addEventListener('change',()=>{cle=null;$('keyok').classList.remove('show');$('key').value='';majUI();maj();});
 majUI();
@@ -113,8 +118,11 @@ $('key').addEventListener('change',async e=>{
   const f=e.target.files[0];if(!f)return;
   try{
     const txt=await f.text();
-    if(conf().schema==="rsa"){
+    const sch=conf().schema;
+    if(sch==="rsa"){
       cle=await crypto.subtle.importKey('pkcs8',pemToDer(txt),{name:'RSASSA-PKCS1-v1_5',hash:'SHA-256'},false,['sign']);
+    }else if(sch==="ecdsa"){
+      cle=await crypto.subtle.importKey('pkcs8',pemToDer(txt),{name:'ECDSA',namedCurve:'P-256'},false,['sign']);
     }else{ // ed25519 : fichier .txt « secretKey(base64):\n<b64> »
       const lines=txt.split('\n');const i=lines.findIndex(l=>l.includes('secretKey'));
       cle=b64ToBytes(lines[i+1]);
@@ -136,6 +144,12 @@ $('go').addEventListener('click',async()=>{
       const bytes=new TextEncoder().encode(JSON.stringify(payload));
       const sig=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',cle,bytes);
       licence=c.prefixe+'.'+b64url(bytes.buffer)+'.'+b64url(sig);
+    }else if(c.schema==="ecdsa"){ // Oraclecoon : 6 octets aléatoires + signature DER, format ORC2-
+      const payload=crypto.getRandomValues(new Uint8Array(6));
+      const raw=new Uint8Array(await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},cle,payload));
+      const der=rawToDer(raw);
+      const buf=new Uint8Array(payload.length+der.length); buf.set(payload); buf.set(der,payload.length);
+      licence=c.prefixe+'-'+b64url(buf.buffer);
     }else{ // ed25519 : payload {c,t:paid|free,d}
       const payload={c:$('client').value.trim(),t:type==="gratuite"?"free":"paid",d:date};
       const bytes=new TextEncoder().encode(JSON.stringify(payload));
