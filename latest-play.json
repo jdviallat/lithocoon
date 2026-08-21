@@ -1,6 +1,6 @@
 {
-  "versionCode": 12,
-  "versionName": "1.9.2",
+  "versionCode": 13,
+  "versionName": "1.9.3",
   "url": "https://play.google.com/store/apps/details?id=com.bengacoon.lithotherapie",
-  "notes": "Réglages : « Détails des versions » regroupe le journal (un appui l'ouvre). Vérification des mises à jour plus claire. Inclut le correctif crash Android 16 (1.9.1), 136 pierres, favoris et écran « Les chakras »."
+  "notes": "Assistant réorganisé en sections dépliables (Humeur du jour, Votre besoin, Questionnaire court ou complet) avec pierres affichées au fur et à mesure. Déverrouillage par empreinte possible sans code PIN. Retrait des liens d'achat en boutique dans les fiches."
 }
