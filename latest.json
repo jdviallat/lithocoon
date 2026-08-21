@@ -1,6 +1,6 @@
 {
-  "versionCode": 13,
-  "versionName": "1.9.3",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.3/Lithocoon-1.9.3.apk",
-  "notes": "Assistant réorganisé en sections dépliables (Humeur du jour, Votre besoin, Questionnaire court ou complet) avec pierres affichées au fur et à mesure. Déverrouillage par empreinte possible sans code PIN. Retrait des liens d'achat en boutique dans les fiches."
+  "versionCode": 14,
+  "versionName": "1.9.4",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.4/Lithocoon-1.9.4.apk",
+  "notes": "Nouveau : chaque fiche pierre et bracelet indique sur quel poignet la porter — gauche pour recevoir l'énergie (pierres apaisantes), droit pour l'émettre (pierres stimulantes), au choix pour les équilibrantes."
 }
