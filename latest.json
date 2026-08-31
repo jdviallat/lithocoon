@@ -1,6 +1,6 @@
 {
-  "versionCode": 23,
-  "versionName": "1.9.13",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.13/Lithocoon-1.9.13.apk",
-  "notes": "Correctif important : vos bracelets, pierres et stock ne sont plus effacés lors des mises à jour. Mes pierres réorganisé (pierres → bracelets → stock). Filtres bibliothèque plus compacts. Mode thérapeute : bracelet client + décompte auto du stock."
+  "versionCode": 24,
+  "versionName": "1.9.14",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.14/Lithocoon-1.9.14.apk",
+  "notes": "Mode thérapeute : édition complète d'une perle du stock (nom, catégorie, taille, quantité, photo). Jauges par catégorie (base 100 perles, 20 argent, 40 intercalaires) avec alertes orange/rouge, toutes configurables dans les Réglages."
 }

@@ -1,6 +1,6 @@
 {
-  "versionCode": 23,
-  "versionName": "1.9.13",
+  "versionCode": 24,
+  "versionName": "1.9.14",
   "url": "https://play.google.com/store/apps/details?id=com.bengacoon.lithotherapie",
-  "notes": "Correctif important : vos bracelets, pierres et stock ne sont plus effacés lors des mises à jour. Mes pierres réorganisé (pierres → bracelets → stock). Filtres bibliothèque plus compacts. Mode thérapeute : bracelet client + décompte auto du stock."
+  "notes": "Mode thérapeute : édition complète d'une perle du stock (nom, catégorie, taille, quantité, photo). Jauges par catégorie (base 100 perles, 20 argent, 40 intercalaires) avec alertes orange/rouge, toutes configurables dans les Réglages."
 }
