@@ -1,6 +1,6 @@
 {
-  "versionCode": 14,
-  "versionName": "1.9.4",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.4/Lithocoon-1.9.4.apk",
-  "notes": "Nouveau : chaque fiche pierre et bracelet indique sur quel poignet la porter — gauche pour recevoir l'énergie (pierres apaisantes), droit pour l'émettre (pierres stimulantes), au choix pour les équilibrantes."
+  "versionCode": 15,
+  "versionName": "1.9.5",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.5/Lithocoon-1.9.5.apk",
+  "notes": "Chaque fiche pierre indique les pierres à associer et celles à éviter d'associer (cliquables). Le rappel de pleine lune invite désormais à purifier ET recharger vos pierres."
 }
