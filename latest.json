@@ -1,6 +1,6 @@
 {
-  "versionCode": 18,
-  "versionName": "1.9.8",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.8/Lithocoon-1.9.8.apk",
-  "notes": "4 nouvelles pierres : Moqui, jaspe léopard, jaspe sang de dragon, pierre de lave (140 au total). Composer : la composition se remet à zéro après enregistrement. Mes bracelets : nombre de perles par pierre affiché."
+  "versionCode": 19,
+  "versionName": "1.9.9",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.9/Lithocoon-1.9.9.apk",
+  "notes": "Bouton « Suggérer un nom » de bracelet selon les pierres. Mes pierres : appui pour agrandir la photo, écrire une note, voir le poignet conseillé, les associations et ouvrir la fiche. Mes bracelets : chaque pierre apparaît une seule fois dans l'entretien."
 }
