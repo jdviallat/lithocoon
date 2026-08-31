@@ -1,6 +1,6 @@
 {
-  "versionCode": 16,
-  "versionName": "1.9.6",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.6/Lithocoon-1.9.6.apk",
-  "notes": "Nouveau : « Mes pierres » — ajoutez les pierres que vous possédez (hors bracelets), avec une photo, et reliez-les au catalogue. « Tirage / carte du jour » renommé « Pierres du jour »."
+  "versionCode": 17,
+  "versionName": "1.9.7",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.7/Lithocoon-1.9.7.apk",
+  "notes": "Les photos de vos pierres et bracelets sont désormais conservées durablement (copie interne) — elles ne disparaissent plus après un redémarrage."
 }
