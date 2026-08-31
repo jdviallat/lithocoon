@@ -1,6 +1,6 @@
 {
-  "versionCode": 17,
-  "versionName": "1.9.7",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.7/Lithocoon-1.9.7.apk",
-  "notes": "Les photos de vos pierres et bracelets sont désormais conservées durablement (copie interne) — elles ne disparaissent plus après un redémarrage."
+  "versionCode": 18,
+  "versionName": "1.9.8",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.8/Lithocoon-1.9.8.apk",
+  "notes": "4 nouvelles pierres : Moqui, jaspe léopard, jaspe sang de dragon, pierre de lave (140 au total). Composer : la composition se remet à zéro après enregistrement. Mes bracelets : nombre de perles par pierre affiché."
 }
