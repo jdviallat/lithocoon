@@ -1,6 +1,6 @@
 {
-  "versionCode": 20,
-  "versionName": "1.9.10",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.10/Lithocoon-1.9.10.apk",
-  "notes": "Bibliothèque : filtres couleur/chakra/fonction repliés (appui sur le titre pour dérouler) + bouton Réinitialiser. Choix de l'affichage grille ou liste (comme la page Créer)."
+  "versionCode": 21,
+  "versionName": "1.9.11",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.11/Lithocoon-1.9.11.apk",
+  "notes": "Mode thérapeute : onglet « Pierres en stock » par catégorie (perles/pierres, perles argent, intercalaires, fermoirs) avec photo, taille et quantité ; barre de niveau + alerte de réappro (orange sous 20, rouge sous 10) ; décompte des perles utilisées."
 }
