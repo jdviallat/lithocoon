@@ -1,6 +1,6 @@
 {
-  "versionCode": 19,
-  "versionName": "1.9.9",
+  "versionCode": 20,
+  "versionName": "1.9.10",
   "url": "https://play.google.com/store/apps/details?id=com.bengacoon.lithotherapie",
-  "notes": "Bouton « Suggérer un nom » de bracelet selon les pierres. Mes pierres : appui pour agrandir la photo, écrire une note, voir le poignet conseillé, les associations et ouvrir la fiche. Mes bracelets : chaque pierre apparaît une seule fois dans l'entretien."
+  "notes": "Bibliothèque : filtres couleur/chakra/fonction repliés (appui sur le titre pour dérouler) + bouton Réinitialiser. Choix de l'affichage grille ou liste (comme la page Créer)."
 }
