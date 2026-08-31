@@ -1,6 +1,6 @@
 {
-  "versionCode": 24,
-  "versionName": "1.9.14",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.14/Lithocoon-1.9.14.apk",
-  "notes": "Mode thérapeute : édition complète d'une perle du stock (nom, catégorie, taille, quantité, photo). Jauges par catégorie (base 100 perles, 20 argent, 40 intercalaires) avec alertes orange/rouge, toutes configurables dans les Réglages."
+  "versionCode": 25,
+  "versionName": "1.9.15",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.15/Lithocoon-1.9.15.apk",
+  "notes": "Composer : ajout et modification de la photo du bracelet. Noms suggérés plus évocateurs. Tableau de synergie globale sur chaque bracelet enregistré. « Ratio idéal » garde le même nombre total de perles (la taille du bracelet ne change plus)."
 }
