@@ -1,6 +1,6 @@
 {
-  "versionCode": 31,
-  "versionName": "1.9.21",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.21/Lithocoon-1.9.21.apk",
-  "notes": "Traduction complète dans les 9 langues des nouveaux écrans (pierres de maison, journal de port, planification, entretien), du guide intégré et de l'écran Créer."
+  "versionCode": 32,
+  "versionName": "1.9.22",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.22/Lithocoon-1.9.22.apk",
+  "notes": "Localisation des textes générés automatiquement (placement des pierres dans la maison, synthèse du journal de port, critères de ressenti et fonctions de l'assistant) dans les 9 langues."
 }
