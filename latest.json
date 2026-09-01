@@ -1,6 +1,6 @@
 {
-  "versionCode": 29,
-  "versionName": "1.9.19",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.19/Lithocoon-1.9.19.apk",
-  "notes": "Nouveau guide d'utilisation complet : Réglages → « Guide d'utilisation » (également en ligne sur le site)."
+  "versionCode": 30,
+  "versionName": "1.9.20",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.20/Lithocoon-1.9.20.apk",
+  "notes": "Le guide d'utilisation complet est désormais intégré DANS l'app (Réglages → Guide d'utilisation) : consultable hors ligne, sans connexion."
 }
