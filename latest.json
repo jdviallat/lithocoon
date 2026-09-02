@@ -1,6 +1,6 @@
 {
-  "versionCode": 32,
-  "versionName": "1.9.22",
-  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.22/Lithocoon-1.9.22.apk",
-  "notes": "Localisation des textes générés automatiquement (placement des pierres dans la maison, synthèse du journal de port, critères de ressenti et fonctions de l'assistant) dans les 9 langues."
+  "versionCode": 33,
+  "versionName": "1.9.23",
+  "url": "https://github.com/jdviallat/lithocoon/releases/download/v1.9.23/Lithocoon-1.9.23.apk",
+  "notes": "Fiches des 140 pierres désormais traduites : anglais disponible (les autres langues arrivent). Repli automatique sur le français si une langue n'est pas encore traduite."
 }
